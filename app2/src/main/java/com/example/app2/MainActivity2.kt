@@ -11,12 +11,12 @@ class MainActivity2 : AppCompatActivity() {
     private lateinit var textSecondsElapsed: TextView
     private val strSecondsElapsed = "Seconds elapsed: "
     private lateinit var mPrefs: SharedPreferences
-    private var state: Int = 0
+    private var state: Boolean = true
 
     private var backgroundThread = Thread {
         while (true) {
             Thread.sleep(1000)
-            if (state == 0) {
+            if (state) {
                 textSecondsElapsed.post {
                     (strSecondsElapsed + secondsElapsed++).also { textSecondsElapsed.text = it }
                 }
@@ -43,15 +43,15 @@ class MainActivity2 : AppCompatActivity() {
         backgroundThread.start()
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        state = 1
-    }
-
     override fun onResume() {
         super.onResume()
 
-        state = 0
+        state = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        state = false
     }
 }
