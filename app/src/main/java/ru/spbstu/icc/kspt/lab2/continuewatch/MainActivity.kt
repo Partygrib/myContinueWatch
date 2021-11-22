@@ -7,21 +7,23 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
     private var secondsElapsed: Int = 0
     private lateinit var textSecondsElapsed: TextView
-    private val str1: String = "Seconds elapsed: "
+    private val strSecondsElapsed: String = "Seconds elapsed: "
+    private var state: Int = 0
 
     private var backgroundThread = Thread {
         while (true) {
             Thread.sleep(1000)
-            textSecondsElapsed.post {
-                (str1 + secondsElapsed++).also { textSecondsElapsed.text = it }
+            if (state == 0) {
+                textSecondsElapsed.post {
+                    (strSecondsElapsed + secondsElapsed++).also { textSecondsElapsed.text = it }
+                }
             }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-
         outState.run {
-            putInt(str1, secondsElapsed)
+            putInt(strSecondsElapsed, secondsElapsed)
         }
 
         super.onSaveInstanceState(outState)
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
 
         savedInstanceState.run {
-            secondsElapsed = getInt(str1)
+            secondsElapsed = getInt(strSecondsElapsed)
         }
     }
 
@@ -41,5 +43,17 @@ class MainActivity : AppCompatActivity() {
 
         textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
         backgroundThread.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        state = 1
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        state = 0
     }
 }
